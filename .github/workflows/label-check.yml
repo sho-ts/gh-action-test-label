@@ -16,6 +16,6 @@ jobs:
           count: 1
           labels: "type: breaking changes,type: bug fixes,type: ci,type: dependencies,type: experimental features,type: features,type: other changes,type: refactoring,type: testing"
           add_comment: true
-          message: "🚨 **Error: This PR does not have a 'type:' label.** 🚨  
-            PR **review will be denied**, and **merging will not be allowed** until an appropriate label is added.  
-            Please add a valid label such as 'type: feature' or 'type: bug fixes' to proceed."
+          message: "🚨 **Error: This PR does not have a 'type:' label.** 🚨<br />
+            PR **review will be denied**, and **merging will not be allowed** until an appropriate label is added.<br />
+            Please add a valid label such as 'type:bug' or 'type:feature' to proceed."
