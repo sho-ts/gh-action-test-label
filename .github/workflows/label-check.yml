@@ -14,6 +14,6 @@ jobs:
         with:
           mode: exactly
           count: 1
-          labels: "type: .*"
+          labels: "type: test"
           add_comment: true
           message: "This PR is being prevented from merging because the label is missing."
