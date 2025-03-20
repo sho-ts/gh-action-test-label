@@ -14,6 +14,6 @@ jobs:
         with:
           mode: exactly
           count: 1
-          labels: "type: test"
+          labels: "type: breaking changes,type: bug fixes,type: ci,type: dependencies,type: experimental features,type: features,type: other changes,type: refactoring,type: testing"
           add_comment: true
           message: "This PR is being prevented from merging because the label is missing."
