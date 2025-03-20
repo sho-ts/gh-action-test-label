@@ -1,0 +1,43 @@
+name: PR Label Check
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, labeled, unlabeled]
+
+jobs:
+  check-labels:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check if PR has a type label
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Fetch PR labels from GitHub API
+          LABELS=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+                  -H "Accept: application/vnd.github.v3+json" \
+                  "${{ github.api_url }}/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels" \
+                  | jq -r '.[].name')
+
+          # Check if a label starting with "type:" exists
+          if echo "$LABELS" | grep -qE '^type:'; then
+            echo "✅ PR contains a valid 'type:' label."
+          else
+            echo "🚨 ERROR: This PR does not have a 'type:' label."
+            echo "⚠️ PR review will be denied, and merging will not be allowed until an appropriate label is added." > warning_message.txt
+
+            # Display GitHub Actions warning annotation
+            echo "::error title=Missing 'type:' label::This PR does not have a 'type:' label. PR review will be denied, and merging will not be allowed until an appropriate label is added."
+
+            # Post a comment on the PR
+            COMMENT_BODY="🚨 **Error: This PR does not have a 'type:' label.** 🚨  
+            PR **review will be denied**, and **merging will not be allowed** until an appropriate label is added.  
+            Please add a valid label such as 'type:bug' or 'type:feature' to proceed."
+
+            curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" \
+                -H "Accept: application/vnd.github.v3+json" \
+                -d "{\"body\":\"$COMMENT_BODY\"}" \
+                "${{ github.api_url }}/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments"
+
+            exit 1  # Prevent merging by failing the workflow
+          fi
